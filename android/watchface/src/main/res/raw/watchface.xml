@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Mana watch face. Two concentric mana rings show what is left and drain as Claude Code
+  usage climbs:
+  the outer ring is the five-hour window and the inner ring is the week. Both come from
+  the Mana app's complication data sources, so the face itself holds no logic.
+  Coordinates are a 450 x 450 virtual space, scaled to the device.
+-->
+<WatchFace width="450" height="450">
+  <Metadata key="CLOCK_TYPE" value="DIGITAL" />
+  <Metadata key="PREVIEW_TIME" value="10:08:32" />
+
+  <Scene backgroundColor="#ff05070d">
+
+    <!-- Date, above the time. -->
+    <PartText x="75" y="108" width="300" height="40">
+      <Variant mode="AMBIENT" target="alpha" value="150" />
+      <Text align="CENTER">
+        <Font family="SYNC_TO_DEVICE" size="28" color="#ff8fb8ff">
+          <Template>%s %s<Parameter expression="[DAY_OF_WEEK_S]" /><Parameter expression="[DAY]" /></Template>
+        </Font>
+      </Text>
+    </PartText>
+
+    <!-- Time. The ambient copy is thin so a dim screen still reads. -->
+    <DigitalClock x="0" y="0" width="450" height="450">
+      <TimeText format="hh:mm" hourFormat="SYNC_TO_DEVICE" align="CENTER" x="0" y="150" width="450" height="110" alpha="255">
+        <Variant mode="AMBIENT" target="alpha" value="0" />
+        <Font family="SYNC_TO_DEVICE" size="104" weight="MEDIUM" color="#ffffffff" />
+      </TimeText>
+      <TimeText format="hh:mm" hourFormat="SYNC_TO_DEVICE" align="CENTER" x="0" y="150" width="450" height="110" alpha="0">
+        <Variant mode="AMBIENT" target="alpha" value="255" />
+        <Font family="SYNC_TO_DEVICE" size="104" weight="THIN" color="#ffffffff" />
+      </TimeText>
+    </DigitalClock>
+
+    <!-- Outer ring: the five-hour window. -->
+    <ComplicationSlot slotId="0" displayName="@string/slot_five_hour"
+        supportedTypes="RANGED_VALUE SHORT_TEXT EMPTY"
+        x="0" y="0" width="450" height="450">
+      <DefaultProviderPolicy
+          primaryProvider="io.github.manawear/io.github.manawear.watch.FiveHourComplicationService"
+          primaryProviderType="RANGED_VALUE"
+          defaultSystemProvider="EMPTY"
+          defaultSystemProviderType="EMPTY" />
+      <BoundingOval x="0" y="0" width="450" height="450" />
+
+      <Complication type="RANGED_VALUE">
+        <PartDraw x="0" y="0" width="450" height="450">
+          <Variant mode="AMBIENT" target="alpha" value="110" />
+          <Arc centerX="225" centerY="225" width="426" height="426" startAngle="-140" endAngle="140">
+            <Stroke thickness="14" color="#ff16233d" cap="ROUND" />
+          </Arc>
+          <Arc centerX="225" centerY="225" width="426" height="426" startAngle="-140" endAngle="140">
+            <Stroke thickness="14" color="#ff4fa3ff" cap="ROUND" />
+            <Transform target="endAngle" value="-140 + (1 - ((clamp(([COMPLICATION.RANGED_VALUE_VALUE]), ([COMPLICATION.RANGED_VALUE_MIN]), ([COMPLICATION.RANGED_VALUE_MAX])) - ([COMPLICATION.RANGED_VALUE_MIN])) / (([COMPLICATION.RANGED_VALUE_MAX]) - ([COMPLICATION.RANGED_VALUE_MIN])))) * 280" />
+          </Arc>
+        </PartDraw>
+        <PartText x="50" y="258" width="350" height="44">
+          <Variant mode="AMBIENT" target="alpha" value="150" />
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="30" color="#ff4fa3ff">
+              <Template>%s used · %s<Parameter expression="[COMPLICATION.TEXT]" /><Parameter expression="[COMPLICATION.TITLE]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+
+      <Complication type="SHORT_TEXT">
+        <PartText x="50" y="258" width="350" height="44">
+          <Variant mode="AMBIENT" target="alpha" value="150" />
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="30" color="#ff4fa3ff">
+              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+
+      <Complication type="EMPTY" />
+    </ComplicationSlot>
+
+    <!-- Inner ring: the week. -->
+    <ComplicationSlot slotId="1" displayName="@string/slot_weekly"
+        supportedTypes="RANGED_VALUE SHORT_TEXT EMPTY"
+        x="30" y="30" width="390" height="390">
+      <DefaultProviderPolicy
+          primaryProvider="io.github.manawear/io.github.manawear.watch.WeeklyComplicationService"
+          primaryProviderType="RANGED_VALUE"
+          defaultSystemProvider="EMPTY"
+          defaultSystemProviderType="EMPTY" />
+      <BoundingOval x="0" y="0" width="390" height="390" />
+
+      <Complication type="RANGED_VALUE">
+        <PartDraw x="0" y="0" width="390" height="390">
+          <Variant mode="AMBIENT" target="alpha" value="110" />
+          <Arc centerX="195" centerY="195" width="370" height="370" startAngle="-140" endAngle="140">
+            <Stroke thickness="8" color="#ff221a3d" cap="ROUND" />
+          </Arc>
+          <Arc centerX="195" centerY="195" width="370" height="370" startAngle="-140" endAngle="140">
+            <Stroke thickness="8" color="#ff9b7bff" cap="ROUND" />
+            <Transform target="endAngle" value="-140 + (1 - ((clamp(([COMPLICATION.RANGED_VALUE_VALUE]), ([COMPLICATION.RANGED_VALUE_MIN]), ([COMPLICATION.RANGED_VALUE_MAX])) - ([COMPLICATION.RANGED_VALUE_MIN])) / (([COMPLICATION.RANGED_VALUE_MAX]) - ([COMPLICATION.RANGED_VALUE_MIN])))) * 280" />
+          </Arc>
+        </PartDraw>
+        <PartText x="45" y="276" width="300" height="34">
+          <Variant mode="AMBIENT" target="alpha" value="150" />
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="22" color="#ff9b7bff">
+              <Template>week %s · %s<Parameter expression="[COMPLICATION.TEXT]" /><Parameter expression="[COMPLICATION.TITLE]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+
+      <Complication type="SHORT_TEXT">
+        <PartText x="45" y="276" width="300" height="34">
+          <Variant mode="AMBIENT" target="alpha" value="150" />
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="22" color="#ff9b7bff">
+              <Template>week %s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+
+      <Complication type="EMPTY" />
+    </ComplicationSlot>
+
+  </Scene>
+</WatchFace>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="watch_face_name">Mana</string>
+    <string name="slot_five_hour">5-hour usage</string>
+    <string name="slot_weekly">Weekly usage</string>
+</resources>

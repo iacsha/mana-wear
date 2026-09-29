@@ -40,10 +40,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             var state by remember(config) { mutableStateOf(UsageState()) }
             var now by remember { mutableStateOf(Instant.now()) }
-            // The phone relay is the default. A URL set through adb switches to direct HTTP.
-            val source: UsageSource = remember(config) {
-                config.url?.let { HttpUsageSource(it, config.token) } ?: DataLayerUsageSource(this@MainActivity)
-            }
+            val source: UsageSource = remember(config) { usageSourceFor(this@MainActivity, config) }
             val lifecycleOwner = LocalLifecycleOwner.current
 
             LaunchedEffect(source) {

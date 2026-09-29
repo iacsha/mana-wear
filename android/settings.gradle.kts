@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "mana-wear"
-include(":shared", ":wear", ":phone")
+include(":shared", ":wear", ":phone", ":watchface")

@@ -43,6 +43,7 @@ android {
 dependencies {
     implementation(libs.wear.compose.material3)
     implementation(libs.wear.compose.foundation)
+    implementation(libs.wear.complications.data.source)
     implementation(libs.activity.compose)
     implementation(libs.lifecycle.runtime.compose)
     implementation(project(":shared"))

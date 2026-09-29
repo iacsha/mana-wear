@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Mana</string>
+    <string name="complication_five_hour">Mana 5-hour</string>
+    <string name="complication_weekly">Mana weekly</string>
 </resources>
