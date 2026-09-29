@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/claude-clip/claude-clip/schema/payload.schema.json",
+  "title": "claude-clip usage payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "collectorVersion", "generatedAt", "source", "observedAt",
+    "ageSeconds", "stale", "fiveHour", "weekly", "accounts", "claudeCodeVersion", "errors"
+  ],
+  "$defs": {
+    "window": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["usedPercentage", "resetsAt"],
+          "properties": {
+            "usedPercentage": { "type": "number", "minimum": 0, "maximum": 100 },
+            "resetsAt": { "type": ["string", "null"], "format": "date-time" }
+          }
+        }
+      ]
+    }
+  },
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "collectorVersion": { "type": "string" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "source": { "enum": ["teamclaude", "statusline-tap", "none"] },
+    "observedAt": { "type": ["string", "null"], "format": "date-time" },
+    "ageSeconds": { "type": ["integer", "null"], "minimum": 0 },
+    "stale": { "type": "boolean" },
+    "fiveHour": { "$ref": "#/$defs/window" },
+    "weekly": { "$ref": "#/$defs/window" },
+    "accounts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["fiveHour", "weekly"],
+        "properties": {
+          "fiveHour": { "$ref": "#/$defs/window" },
+          "weekly": { "$ref": "#/$defs/window" }
+        }
+      }
+    },
+    "claudeCodeVersion": { "type": ["string", "null"] },
+    "errors": { "type": "array", "items": { "type": "string", "pattern": "^[a-z-]+:[a-z0-9-]+$" } }
+  }
+}

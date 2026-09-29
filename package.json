@@ -1,0 +1,13 @@
+{
+  "name": "claude-clip",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "bun test",
+    "collector": "bun collector/main.ts"
+  },
+  "devDependencies": {
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1"
+  }
+}
