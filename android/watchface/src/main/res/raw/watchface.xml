@@ -49,11 +49,11 @@
     <DigitalClock x="0" y="0" width="450" height="450">
       <TimeText format="hh:mm" hourFormat="SYNC_TO_DEVICE" align="CENTER" x="0" y="150" width="450" height="110" alpha="255">
         <Variant mode="AMBIENT" target="alpha" value="0" />
-        <Font family="SYNC_TO_DEVICE" size="104" weight="MEDIUM" color="#ffffffff" />
+        <Font family="SYNC_TO_DEVICE" size="92" weight="MEDIUM" color="#ffffffff" />
       </TimeText>
       <TimeText format="hh:mm" hourFormat="SYNC_TO_DEVICE" align="CENTER" x="0" y="150" width="450" height="110" alpha="0">
         <Variant mode="AMBIENT" target="alpha" value="255" />
-        <Font family="SYNC_TO_DEVICE" size="104" weight="THIN" color="#ffffffff" />
+        <Font family="SYNC_TO_DEVICE" size="92" weight="THIN" color="#ffffffff" />
       </TimeText>
     </DigitalClock>
 
@@ -69,16 +69,50 @@
       <BoundingOval x="0" y="0" width="450" height="450" />
 
       <Complication type="RANGED_VALUE">
-        <PartDraw x="0" y="0" width="450" height="450">
-          <Variant mode="AMBIENT" target="alpha" value="110" />
-          <Arc centerX="225" centerY="225" width="426" height="426" startAngle="-140" endAngle="140">
-            <Stroke thickness="14" color="#ff16233d" cap="ROUND" />
-          </Arc>
-          <Arc centerX="225" centerY="225" width="426" height="426" startAngle="-140" endAngle="140">
-            <Stroke thickness="14" color="#ff4fa3ff" cap="ROUND" />
-            <Transform target="endAngle" value="-140 + (1 - ((clamp(([COMPLICATION.RANGED_VALUE_VALUE]), ([COMPLICATION.RANGED_VALUE_MIN]), ([COMPLICATION.RANGED_VALUE_MAX])) - ([COMPLICATION.RANGED_VALUE_MIN])) / (([COMPLICATION.RANGED_VALUE_MAX]) - ([COMPLICATION.RANGED_VALUE_MIN])))) * 280" />
-          </Arc>
-        </PartDraw>
+        <Group name="ring" x="0" y="0" width="450" height="450">
+          <Condition>
+            <Expressions>
+              <Expression name="critical">((clamp(([COMPLICATION.RANGED_VALUE_VALUE]), ([COMPLICATION.RANGED_VALUE_MIN]), ([COMPLICATION.RANGED_VALUE_MAX])) - ([COMPLICATION.RANGED_VALUE_MIN])) / (([COMPLICATION.RANGED_VALUE_MAX]) - ([COMPLICATION.RANGED_VALUE_MIN]))) &gt;= 0.95</Expression>
+              <Expression name="low">((clamp(([COMPLICATION.RANGED_VALUE_VALUE]), ([COMPLICATION.RANGED_VALUE_MIN]), ([COMPLICATION.RANGED_VALUE_MAX])) - ([COMPLICATION.RANGED_VALUE_MIN])) / (([COMPLICATION.RANGED_VALUE_MAX]) - ([COMPLICATION.RANGED_VALUE_MIN]))) &gt;= 0.8</Expression>
+            </Expressions>
+            <Compare expression="critical">
+              <PartDraw x="0" y="0" width="450" height="450">
+                <Variant mode="AMBIENT" target="alpha" value="110" />
+                <Arc centerX="225" centerY="225" width="426" height="426" startAngle="-140" endAngle="140">
+                  <Stroke thickness="14" color="#ff16233d" cap="ROUND" />
+                </Arc>
+                <Arc centerX="225" centerY="225" width="426" height="426" startAngle="-140" endAngle="140">
+                  <Stroke thickness="14" color="#ffff5a5f" cap="ROUND" />
+                  <Transform target="endAngle" value="-140 + (1 - ((clamp(([COMPLICATION.RANGED_VALUE_VALUE]), ([COMPLICATION.RANGED_VALUE_MIN]), ([COMPLICATION.RANGED_VALUE_MAX])) - ([COMPLICATION.RANGED_VALUE_MIN])) / (([COMPLICATION.RANGED_VALUE_MAX]) - ([COMPLICATION.RANGED_VALUE_MIN])))) * 280" />
+                </Arc>
+              </PartDraw>
+            </Compare>
+            <Compare expression="low">
+              <PartDraw x="0" y="0" width="450" height="450">
+                <Variant mode="AMBIENT" target="alpha" value="110" />
+                <Arc centerX="225" centerY="225" width="426" height="426" startAngle="-140" endAngle="140">
+                  <Stroke thickness="14" color="#ff16233d" cap="ROUND" />
+                </Arc>
+                <Arc centerX="225" centerY="225" width="426" height="426" startAngle="-140" endAngle="140">
+                  <Stroke thickness="14" color="#ffffb347" cap="ROUND" />
+                  <Transform target="endAngle" value="-140 + (1 - ((clamp(([COMPLICATION.RANGED_VALUE_VALUE]), ([COMPLICATION.RANGED_VALUE_MIN]), ([COMPLICATION.RANGED_VALUE_MAX])) - ([COMPLICATION.RANGED_VALUE_MIN])) / (([COMPLICATION.RANGED_VALUE_MAX]) - ([COMPLICATION.RANGED_VALUE_MIN])))) * 280" />
+                </Arc>
+              </PartDraw>
+            </Compare>
+            <Default>
+              <PartDraw x="0" y="0" width="450" height="450">
+                <Variant mode="AMBIENT" target="alpha" value="110" />
+                <Arc centerX="225" centerY="225" width="426" height="426" startAngle="-140" endAngle="140">
+                  <Stroke thickness="14" color="#ff16233d" cap="ROUND" />
+                </Arc>
+                <Arc centerX="225" centerY="225" width="426" height="426" startAngle="-140" endAngle="140">
+                  <Stroke thickness="14" color="#ff4fa3ff" cap="ROUND" />
+                  <Transform target="endAngle" value="-140 + (1 - ((clamp(([COMPLICATION.RANGED_VALUE_VALUE]), ([COMPLICATION.RANGED_VALUE_MIN]), ([COMPLICATION.RANGED_VALUE_MAX])) - ([COMPLICATION.RANGED_VALUE_MIN])) / (([COMPLICATION.RANGED_VALUE_MAX]) - ([COMPLICATION.RANGED_VALUE_MIN])))) * 280" />
+                </Arc>
+              </PartDraw>
+            </Default>
+          </Condition>
+        </Group>
         <PartText x="50" y="258" width="350" height="44">
           <Variant mode="AMBIENT" target="alpha" value="150" />
           <Text align="CENTER" ellipsis="TRUE">
@@ -115,16 +149,50 @@
       <BoundingOval x="0" y="0" width="390" height="390" />
 
       <Complication type="RANGED_VALUE">
-        <PartDraw x="0" y="0" width="390" height="390">
-          <Variant mode="AMBIENT" target="alpha" value="110" />
-          <Arc centerX="195" centerY="195" width="370" height="370" startAngle="-140" endAngle="140">
-            <Stroke thickness="8" color="#ff221a3d" cap="ROUND" />
-          </Arc>
-          <Arc centerX="195" centerY="195" width="370" height="370" startAngle="-140" endAngle="140">
-            <Stroke thickness="8" color="#ff9b7bff" cap="ROUND" />
-            <Transform target="endAngle" value="-140 + (1 - ((clamp(([COMPLICATION.RANGED_VALUE_VALUE]), ([COMPLICATION.RANGED_VALUE_MIN]), ([COMPLICATION.RANGED_VALUE_MAX])) - ([COMPLICATION.RANGED_VALUE_MIN])) / (([COMPLICATION.RANGED_VALUE_MAX]) - ([COMPLICATION.RANGED_VALUE_MIN])))) * 280" />
-          </Arc>
-        </PartDraw>
+        <Group name="ring" x="0" y="0" width="390" height="390">
+          <Condition>
+            <Expressions>
+              <Expression name="critical">((clamp(([COMPLICATION.RANGED_VALUE_VALUE]), ([COMPLICATION.RANGED_VALUE_MIN]), ([COMPLICATION.RANGED_VALUE_MAX])) - ([COMPLICATION.RANGED_VALUE_MIN])) / (([COMPLICATION.RANGED_VALUE_MAX]) - ([COMPLICATION.RANGED_VALUE_MIN]))) &gt;= 0.95</Expression>
+              <Expression name="low">((clamp(([COMPLICATION.RANGED_VALUE_VALUE]), ([COMPLICATION.RANGED_VALUE_MIN]), ([COMPLICATION.RANGED_VALUE_MAX])) - ([COMPLICATION.RANGED_VALUE_MIN])) / (([COMPLICATION.RANGED_VALUE_MAX]) - ([COMPLICATION.RANGED_VALUE_MIN]))) &gt;= 0.8</Expression>
+            </Expressions>
+            <Compare expression="critical">
+              <PartDraw x="0" y="0" width="390" height="390">
+                <Variant mode="AMBIENT" target="alpha" value="110" />
+                <Arc centerX="195" centerY="195" width="370" height="370" startAngle="-140" endAngle="140">
+                  <Stroke thickness="8" color="#ff221a3d" cap="ROUND" />
+                </Arc>
+                <Arc centerX="195" centerY="195" width="370" height="370" startAngle="-140" endAngle="140">
+                  <Stroke thickness="8" color="#ffff5a5f" cap="ROUND" />
+                  <Transform target="endAngle" value="-140 + (1 - ((clamp(([COMPLICATION.RANGED_VALUE_VALUE]), ([COMPLICATION.RANGED_VALUE_MIN]), ([COMPLICATION.RANGED_VALUE_MAX])) - ([COMPLICATION.RANGED_VALUE_MIN])) / (([COMPLICATION.RANGED_VALUE_MAX]) - ([COMPLICATION.RANGED_VALUE_MIN])))) * 280" />
+                </Arc>
+              </PartDraw>
+            </Compare>
+            <Compare expression="low">
+              <PartDraw x="0" y="0" width="390" height="390">
+                <Variant mode="AMBIENT" target="alpha" value="110" />
+                <Arc centerX="195" centerY="195" width="370" height="370" startAngle="-140" endAngle="140">
+                  <Stroke thickness="8" color="#ff221a3d" cap="ROUND" />
+                </Arc>
+                <Arc centerX="195" centerY="195" width="370" height="370" startAngle="-140" endAngle="140">
+                  <Stroke thickness="8" color="#ffffb347" cap="ROUND" />
+                  <Transform target="endAngle" value="-140 + (1 - ((clamp(([COMPLICATION.RANGED_VALUE_VALUE]), ([COMPLICATION.RANGED_VALUE_MIN]), ([COMPLICATION.RANGED_VALUE_MAX])) - ([COMPLICATION.RANGED_VALUE_MIN])) / (([COMPLICATION.RANGED_VALUE_MAX]) - ([COMPLICATION.RANGED_VALUE_MIN])))) * 280" />
+                </Arc>
+              </PartDraw>
+            </Compare>
+            <Default>
+              <PartDraw x="0" y="0" width="390" height="390">
+                <Variant mode="AMBIENT" target="alpha" value="110" />
+                <Arc centerX="195" centerY="195" width="370" height="370" startAngle="-140" endAngle="140">
+                  <Stroke thickness="8" color="#ff221a3d" cap="ROUND" />
+                </Arc>
+                <Arc centerX="195" centerY="195" width="370" height="370" startAngle="-140" endAngle="140">
+                  <Stroke thickness="8" color="#ff9b7bff" cap="ROUND" />
+                  <Transform target="endAngle" value="-140 + (1 - ((clamp(([COMPLICATION.RANGED_VALUE_VALUE]), ([COMPLICATION.RANGED_VALUE_MIN]), ([COMPLICATION.RANGED_VALUE_MAX])) - ([COMPLICATION.RANGED_VALUE_MIN])) / (([COMPLICATION.RANGED_VALUE_MAX]) - ([COMPLICATION.RANGED_VALUE_MIN])))) * 280" />
+                </Arc>
+              </PartDraw>
+            </Default>
+          </Condition>
+        </Group>
         <PartText x="45" y="276" width="300" height="34">
           <Variant mode="AMBIENT" target="alpha" value="150" />
           <Text align="CENTER" ellipsis="TRUE">
@@ -146,6 +214,106 @@
         </PartText>
       </Complication>
 
+      <Complication type="EMPTY" />
+    </ComplicationSlot>
+
+    <!-- Two small slots beside the time, chosen by the wearer in the face editor.
+         Defaults: battery on the left, steps on the right. -->
+    <ComplicationSlot slotId="2" displayName="@string/slot_left"
+        supportedTypes="RANGED_VALUE SHORT_TEXT SMALL_IMAGE MONOCHROMATIC_IMAGE EMPTY"
+        x="44" y="174" width="64" height="64">
+      <DefaultProviderPolicy defaultSystemProvider="WATCH_BATTERY" defaultSystemProviderType="RANGED_VALUE" />
+      <BoundingOval x="0" y="0" width="64" height="64" />
+      <Complication type="RANGED_VALUE">
+        <PartDraw x="0" y="0" width="64" height="64">
+          <Variant mode="AMBIENT" target="alpha" value="110" />
+          <Arc centerX="32" centerY="32" width="58" height="58" startAngle="0" endAngle="360">
+            <Stroke thickness="4" color="#ff2a3550" cap="ROUND" />
+          </Arc>
+          <Arc centerX="32" centerY="32" width="58" height="58" startAngle="0" endAngle="360">
+            <Stroke thickness="4" color="#ffc9d6ea" cap="ROUND" />
+            <Transform target="endAngle" value="((clamp(([COMPLICATION.RANGED_VALUE_VALUE]), ([COMPLICATION.RANGED_VALUE_MIN]), ([COMPLICATION.RANGED_VALUE_MAX])) - ([COMPLICATION.RANGED_VALUE_MIN])) / (([COMPLICATION.RANGED_VALUE_MAX]) - ([COMPLICATION.RANGED_VALUE_MIN]))) * 360" />
+          </Arc>
+        </PartDraw>
+        <PartText x="6" y="20" width="52" height="24">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="17" color="#ffffffff">
+              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+      <Complication type="SHORT_TEXT">
+        <PartImage x="20" y="6" width="24" height="24" tintColor="#ffc9d6ea">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+        <PartText x="4" y="32" width="56" height="24">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="17" color="#ffffffff">
+              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+      <Complication type="MONOCHROMATIC_IMAGE">
+        <PartImage x="16" y="16" width="32" height="32" tintColor="#ffc9d6ea">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+      </Complication>
+      <Complication type="SMALL_IMAGE">
+        <PartImage x="8" y="8" width="48" height="48">
+          <Image resource="[COMPLICATION.SMALL_IMAGE]" />
+        </PartImage>
+      </Complication>
+      <Complication type="EMPTY" />
+    </ComplicationSlot>
+
+    <ComplicationSlot slotId="3" displayName="@string/slot_right"
+        supportedTypes="RANGED_VALUE SHORT_TEXT SMALL_IMAGE MONOCHROMATIC_IMAGE EMPTY"
+        x="342" y="174" width="64" height="64">
+      <DefaultProviderPolicy defaultSystemProvider="STEP_COUNT" defaultSystemProviderType="SHORT_TEXT" />
+      <BoundingOval x="0" y="0" width="64" height="64" />
+      <Complication type="RANGED_VALUE">
+        <PartDraw x="0" y="0" width="64" height="64">
+          <Variant mode="AMBIENT" target="alpha" value="110" />
+          <Arc centerX="32" centerY="32" width="58" height="58" startAngle="0" endAngle="360">
+            <Stroke thickness="4" color="#ff2a3550" cap="ROUND" />
+          </Arc>
+          <Arc centerX="32" centerY="32" width="58" height="58" startAngle="0" endAngle="360">
+            <Stroke thickness="4" color="#ffc9d6ea" cap="ROUND" />
+            <Transform target="endAngle" value="((clamp(([COMPLICATION.RANGED_VALUE_VALUE]), ([COMPLICATION.RANGED_VALUE_MIN]), ([COMPLICATION.RANGED_VALUE_MAX])) - ([COMPLICATION.RANGED_VALUE_MIN])) / (([COMPLICATION.RANGED_VALUE_MAX]) - ([COMPLICATION.RANGED_VALUE_MIN]))) * 360" />
+          </Arc>
+        </PartDraw>
+        <PartText x="6" y="20" width="52" height="24">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="17" color="#ffffffff">
+              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+      <Complication type="SHORT_TEXT">
+        <PartImage x="20" y="6" width="24" height="24" tintColor="#ffc9d6ea">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+        <PartText x="4" y="32" width="56" height="24">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="SYNC_TO_DEVICE" size="17" color="#ffffffff">
+              <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+      <Complication type="MONOCHROMATIC_IMAGE">
+        <PartImage x="16" y="16" width="32" height="32" tintColor="#ffc9d6ea">
+          <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+        </PartImage>
+      </Complication>
+      <Complication type="SMALL_IMAGE">
+        <PartImage x="8" y="8" width="48" height="48">
+          <Image resource="[COMPLICATION.SMALL_IMAGE]" />
+        </PartImage>
+      </Complication>
       <Complication type="EMPTY" />
     </ComplicationSlot>
 

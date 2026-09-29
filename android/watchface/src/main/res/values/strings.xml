@@ -3,4 +3,6 @@
     <string name="watch_face_name">Mana</string>
     <string name="slot_five_hour">5-hour usage</string>
     <string name="slot_weekly">Weekly usage</string>
+    <string name="slot_left">Left</string>
+    <string name="slot_right">Right</string>
 </resources>
