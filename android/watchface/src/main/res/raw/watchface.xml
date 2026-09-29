@@ -12,6 +12,29 @@
 
   <Scene backgroundColor="#ff05070d">
 
+    <!-- Weather, above the date. Only drawn when the watch has a forecast; the unit
+         follows the user's own setting. -->
+    <Group name="weather" x="0" y="0" width="450" height="450">
+      <Condition>
+        <Expressions>
+          <Expression name="weather_ok">[WEATHER.IS_AVAILABLE]</Expression>
+        </Expressions>
+        <Compare expression="weather_ok">
+          <PartText x="100" y="70" width="250" height="36">
+            <Variant mode="AMBIENT" target="alpha" value="150" />
+            <Text align="CENTER" ellipsis="TRUE">
+              <Font family="SYNC_TO_DEVICE" size="22" color="#ffc9d6ea">
+                <Template>%s°%s %s<Parameter expression="[WEATHER.TEMPERATURE]" /><Parameter expression="[WEATHER.TEMPERATURE_UNIT] == 1 ? &quot;C&quot; : &quot;F&quot;" /><Parameter expression="[WEATHER.CONDITION_NAME]" /></Template>
+              </Font>
+            </Text>
+          </PartText>
+        </Compare>
+        <Default>
+          <Group name="no_weather" x="0" y="0" width="1" height="1" />
+        </Default>
+      </Condition>
+    </Group>
+
     <!-- Date, above the time. -->
     <PartText x="75" y="108" width="300" height="40">
       <Variant mode="AMBIENT" target="alpha" value="150" />
