@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Google Play services reads android_wear_capabilities by name, so the resource
+     shrinker cannot see the use. Without this the release build drops it and the watch
+     reports "install Mana on phone". -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@array/android_wear_capabilities" />

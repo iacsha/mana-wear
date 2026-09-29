@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Lets the watch find a phone that has Mana installed, separately from any phone that
+     is merely connected. Must match RELAY_CAPABILITY in :shared. Kept from the
+     shrinker by res/raw/keep.xml. -->
+<resources>
+    <string-array name="android_wear_capabilities">
+        <item>mana_relay</item>
+    </string-array>
+</resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder bent-wire paperclip. The mascot proper arrives in Phase 6. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path
+        android:fillColor="#FF1F2937"
+        android:pathData="M24,0a24,24 0,1 1,0 48a24,24 0,1 1,0 -48z" />
+    <path
+        android:strokeColor="#FFD97757"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M20,34 L20,14 A5,5 0,0 1,30 14 L30,32 A7,7 0,0 1,16 32 L16,16" />
+</vector>

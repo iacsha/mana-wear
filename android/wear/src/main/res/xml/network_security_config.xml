@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The collector URL is user-set and normally a tailnet address, where WireGuard already
+     encrypts the hop, so plain HTTP is allowed. The Phase 5 phone relay replaces this path
+     for most users. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>
