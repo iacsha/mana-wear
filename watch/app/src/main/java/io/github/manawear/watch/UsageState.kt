@@ -1,4 +1,4 @@
-package io.github.claudeclip.watch
+package io.github.manawear.watch
 
 /** What the screen shows. A failed fetch never replaces the last good reading. */
 data class UsageState(

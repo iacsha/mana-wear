@@ -1,4 +1,4 @@
-package io.github.claudeclip.watch
+package io.github.manawear.watch
 
 import com.sun.net.httpserver.HttpServer
 import kotlinx.coroutines.test.runTest

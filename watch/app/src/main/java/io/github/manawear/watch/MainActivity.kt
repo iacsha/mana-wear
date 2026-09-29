@@ -1,4 +1,4 @@
-package io.github.claudeclip.watch
+package io.github.manawear.watch
 
 import android.content.Intent
 import android.os.Bundle
@@ -20,7 +20,7 @@ const val REFRESH_MS = 60_000L
 /**
  * One screen. Configure from a computer with:
  *
- *   adb shell am start -n io.github.claudeclip.watch/.MainActivity \
+ *   adb shell am start -n io.github.manawear.watch/.MainActivity \
  *     --es url http://HOST:7339/v1/usage --es token TOKEN
  *
  * Nothing here logs the URL, the token, or any figure.

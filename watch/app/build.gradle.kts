@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "io.github.claudeclip.watch"
+    namespace = "io.github.manawear.watch"
     // Wear Compose 1.7 and lifecycle 2.11 require compiling against 37. targetSdk stays
     // 36 until the API 37 ACCESS_LOCAL_NETWORK behaviour is handled.
     compileSdk {
@@ -13,7 +13,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "io.github.claudeclip.watch"
+        applicationId = "io.github.manawear.watch"
         minSdk = 30
         targetSdk = 36
         versionCode = 1

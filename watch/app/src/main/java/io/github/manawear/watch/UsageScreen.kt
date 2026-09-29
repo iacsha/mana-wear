@@ -1,4 +1,4 @@
-package io.github.claudeclip.watch
+package io.github.manawear.watch
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

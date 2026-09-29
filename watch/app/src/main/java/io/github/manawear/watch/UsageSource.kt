@@ -1,4 +1,4 @@
-package io.github.claudeclip.watch
+package io.github.manawear.watch
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

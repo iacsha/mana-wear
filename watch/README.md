@@ -1,4 +1,4 @@
-# claude-clip watch app
+# Mana — mana-wear watch app
 
 The Wear OS app. It shows the five-hour and weekly plan usage that the collector
 serves, with reset countdowns and the age of the reading.
@@ -25,7 +25,7 @@ and then run:
 
 ```sh
 adb install -r app/build/outputs/apk/release/app-release.apk
-adb shell am start -n io.github.claudeclip.watch/.MainActivity \
+adb shell am start -n io.github.manawear.watch/.MainActivity \
   --es url http://COLLECTOR_HOST:7339/v1/usage \
   --es token "$(cat ~/.config/claude-clip/token)"
 ```

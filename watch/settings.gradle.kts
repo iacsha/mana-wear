@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "claude-clip-watch"
+rootProject.name = "mana-wear-watch"
 include(":app")
