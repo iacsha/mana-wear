@@ -45,6 +45,8 @@ dependencies {
     implementation(libs.compose.material3)
     implementation(libs.activity.compose)
     implementation(libs.play.services.wearable)
+    // Google's scanner UI runs in Play services, so the app needs no camera permission.
+    implementation(libs.play.services.code.scanner)
     implementation(libs.coroutines.play.services)
 
     testImplementation(libs.junit)

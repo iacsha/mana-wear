@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-// claude-clip statusLine tap.
+// Mana statusLine tap.
 //
 // Claude Code passes a JSON document on stdin to the statusLine command. Since 2.1.80
 // that document carries `rate_limits` for Pro/Max plans. This tap records only the
@@ -9,11 +9,14 @@
 // Usage in settings.json:
 //   "command": "bun /path/to/tap.ts node /path/to/your-existing-statusline.js"
 //
+// `mana-collector init` writes this for you. It stores your existing command in the
+// config file instead of on the command line, and the tap runs it through the shell.
+//
 // The tap must never break the status line. Every recording failure is swallowed.
 
 import { mkdirSync, renameSync, writeFileSync } from "node:fs";
-import { homedir } from "node:os";
 import { join } from "node:path";
+import { loadConfig, stateDir } from "../collector/config";
 
 export const TAP_SCHEMA_VERSION = 1;
 
@@ -30,10 +33,7 @@ export interface TapRecord {
   sevenDay: Window | null;
 }
 
-export function stateDir(): string {
-  const base = process.env.XDG_STATE_HOME || join(homedir(), ".local", "state");
-  return join(base, "claude-clip");
-}
+export { stateDir };
 
 function toWindow(seg: unknown): Window | null {
   if (!seg || typeof seg !== "object") return null;
@@ -97,7 +97,18 @@ export function record(raw: string, dir: string = stateDir()): void {
   if (rec) writeAtomic(join(dir, "usage.json"), JSON.stringify(rec) + "\n");
 }
 
-async function main(): Promise<void> {
+// The command the tap hands stdin to: an argv given on the command line (hand-written
+// settings), else the shell command init saved in the config file.
+export function downstreamArgv(args: string[], saved?: string): string[] {
+  // Bun swallows a literal `--`, so everything after the script path is the downstream
+  // command. A leading `--` is still tolerated for runtimes that pass it through.
+  const argv = args[0] === "--" ? args.slice(1) : args;
+  if (argv.length > 0) return argv;
+  if (!saved) return [];
+  return process.platform === "win32" ? ["cmd.exe", "/d", "/s", "/c", saved] : ["/bin/sh", "-c", saved];
+}
+
+export async function runTap(args: string[]): Promise<void> {
   const raw = await Bun.stdin.text();
   try {
     record(raw);
@@ -105,10 +116,13 @@ async function main(): Promise<void> {
     // Never let the tap break the status line.
   }
 
-  // Bun swallows a literal `--`, so everything after the script path is the downstream
-  // command. A leading `--` is still tolerated for runtimes that pass it through.
-  const rest = process.argv.slice(2);
-  const downstream = rest[0] === "--" ? rest.slice(1) : rest;
+  let saved: string | undefined;
+  try {
+    saved = loadConfig().downstream;
+  } catch {
+    saved = undefined;
+  }
+  const downstream = downstreamArgv(args, saved);
   if (downstream.length === 0) return;
 
   const proc = Bun.spawn(downstream, { stdin: "pipe", stdout: "pipe", stderr: "inherit" });
@@ -119,4 +133,4 @@ async function main(): Promise<void> {
   process.exitCode = await proc.exited;
 }
 
-if (import.meta.main) await main();
+if (import.meta.main) await runTap(process.argv.slice(2));

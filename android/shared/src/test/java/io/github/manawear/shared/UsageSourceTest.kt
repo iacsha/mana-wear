@@ -28,6 +28,11 @@ class UsageSourceTest {
             }
             ex.close()
         }
+        server.createContext("/moved") { ex ->
+            ex.responseHeaders.add("Location", url)
+            ex.sendResponseHeaders(302, -1)
+            ex.close()
+        }
         server.start()
     }
 
@@ -48,7 +53,13 @@ class UsageSourceTest {
         assertEquals(null, seenAuth)
     }
 
-    @Test fun closedPortIsUnreachable() = runTest {
+    @Test fun redirectIsNotFollowed() = runTest {
+        val r = HttpUsageSource("http://127.0.0.1:${server.address.port}/moved", "good-token-123456").fetch()
+        assertEquals(FetchResult.HttpError(302), r)
+        assertEquals(null, seenAuth)
+    }
+
+    @Test fun closedPortIsUnreachable()= runTest {
         val port = ServerSocket(0).use { it.localPort }
         val r = HttpUsageSource("http://127.0.0.1:$port/v1/usage", "t", connectTimeoutMs = 1000).fetch()
         assertTrue(r is FetchResult.Unreachable)

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/claude-clip/claude-clip/schema/payload.schema.json",
-  "title": "claude-clip usage payload",
+  "$id": "https://github.com/iacsha/mana-wear/schema/payload.schema.json",
+  "title": "Mana usage payload",
   "type": "object",
   "additionalProperties": false,
   "required": [

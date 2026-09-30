@@ -1,3 +1,4 @@
 node_modules/
 *.tmp
 ops/git-push.log
+.claude/

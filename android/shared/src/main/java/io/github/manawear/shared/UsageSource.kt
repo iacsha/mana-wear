@@ -4,7 +4,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.net.HttpURLConnection
-import java.net.URL
 
 sealed interface FetchResult {
     data class Ok(val payload: Payload) : FetchResult
@@ -40,12 +39,18 @@ class HttpUsageSource(
 ) : UsageSource {
 
     override suspend fun fetch(): FetchResult = withContext(Dispatchers.IO) {
+        val uri = parseHttpUri(url) ?: return@withContext FetchResult.Unreachable("bad-url")
+        // Checked before connecting, so a refused URL never sees the token.
+        if (!cleartextAllowed(url)) return@withContext FetchResult.Unreachable("cleartext-refused")
         val conn = try {
-            URL(url).openConnection() as HttpURLConnection
+            // The URL that was checked is the URL that is opened: same parse, no re-parse.
+            uri.toURL().openConnection() as HttpURLConnection
         } catch (e: Exception) {
             return@withContext FetchResult.Unreachable("bad-url")
         }
         try {
+            // A redirect would carry the token to a host the policy never checked.
+            conn.instanceFollowRedirects = false
             conn.connectTimeout = connectTimeoutMs
             conn.readTimeout = readTimeoutMs
             conn.useCaches = false

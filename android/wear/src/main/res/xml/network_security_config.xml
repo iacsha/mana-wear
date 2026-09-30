@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The collector URL is user-set and normally a tailnet address, where WireGuard already
-     encrypts the hop, so plain HTTP is allowed. The Phase 5 phone relay replaces this path
-     for most users. -->
+<!-- Cleartext is permitted here only because this file cannot express address ranges. The
+     real policy is enforced in code: HttpUsageSource refuses to connect unless
+     cleartextAllowed(url) in :shared (UrlPolicy.kt) passes, which allows plain http only to
+     private, loopback, and Tailscale addresses and https everywhere. -->
 <network-security-config>
     <base-config cleartextTrafficPermitted="true" />
 </network-security-config>

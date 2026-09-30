@@ -36,18 +36,46 @@ the same key. Check with `apksigner verify --print-certs` on each.
    the collector) and a paired watch.
 2. Watch: turn on ADB debugging and Wireless debugging, pair, then
    `adb install -r wear-release.apk`.
-3. Open Mana on the phone. Enter the collector URL (for example
-   `http://100.64.0.10:7339/v1/usage`) and the token, then tap **Save and test**.
+3. Pair the phone with the collector (below).
 4. Open Mana on the watch.
+
+## Pairing
+
+On the machine running the collector, run `mana-collector pair`. It prints a QR code that
+holds the collector URL and token. Open Mana on the phone, tap **Scan pairing code**, and
+point the camera at it. The phone fills in both fields, saves them, and runs the same test
+as **Save and test**. The scanner is Google's, running in Play services, so Mana asks for
+no camera permission.
+
+The code is a `mana://pair?v=1&url=...&token=...` link, and opening that link on the phone
+works too. A link never saves on its own: Mana shows the collector's host and waits for a
+tap on **Pair**, because any app or web page can open a `mana://` link.
+
+To enter things by hand instead, type the collector URL (for example
+`https://my-pc.tailnet.ts.net/v1/usage`) and the token, then tap **Save and test**.
+
+## Plain http
+
+Plain `http://` is allowed only to addresses where the token cannot cross the internet in
+the clear: `10/8`, `172.16/12`, `192.168/16`, Tailscale's `100.64/10`, loopback,
+`localhost`, `*.local`, and IPv6 `::1` and `fd00::/8` (which holds Tailscale's IPv6
+range). Anything else needs `https://`; `tailscale serve` gives the collector an https
+address on your tailnet. Hostnames are not resolved, so `http://my-pc.tailnet.ts.net` is
+refused even though it points at a tailnet address.
+
+The rule is `cleartextAllowed()` in `:shared` (`UrlPolicy.kt`). `HttpUsageSource` checks
+it before connecting, on the phone and on the watch's direct mode, and does not follow
+redirects. Both apps' `network_security_config.xml` still permit cleartext, because that
+file cannot express address ranges.
 
 ## Direct HTTP instead of the relay
 
 For a watch that can reach the collector itself, set the URL on the watch. That skips the
-phone:
+phone. The same plain-http rule applies:
 
 ```sh
 adb shell am start -n io.github.manawear/io.github.manawear.watch.MainActivity \
-  --es url http://COLLECTOR_HOST:7339/v1/usage --es token TOKEN
+  --es url https://COLLECTOR_HOST/v1/usage --es token TOKEN
 ```
 
 If you change the URL without also sending a token, the app forgets the stored token.
