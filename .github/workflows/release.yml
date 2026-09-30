@@ -1,0 +1,95 @@
+name: release
+
+# Push a tag like v0.3.0 to build, sign and publish a GitHub Release. The tag must match
+# mana.versionName in android/gradle.properties and "version" in package.json.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Tag matches the versions in the tree
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          android=$(sed -n 's/^mana.versionName=//p' android/gradle.properties)
+          npm=$(jq -r .version package.json)
+          echo "tag $tag, android $android, package.json $npm"
+          [ "$tag" = "$android" ] && [ "$tag" = "$npm" ]
+
+      - uses: oven-sh/setup-bun@v2
+      - name: Collector tests
+        run: bun install --frozen-lockfile && bun test
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: "platforms;android-37.2 build-tools;36.1.0"
+      - uses: gradle/actions/setup-gradle@v5
+
+      - name: Restore the release keystore
+        env:
+          MANA_KEYSTORE_B64: ${{ secrets.MANA_KEYSTORE_B64 }}
+        run: |
+          [ -n "$MANA_KEYSTORE_B64" ] || { echo "MANA_KEYSTORE_B64 secret is missing"; exit 1; }
+          echo "$MANA_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/mana-release.p12"
+
+      # -Pmana.requireReleaseKey fails the build rather than falling back to the debug key.
+      - name: Test, build and sign
+        working-directory: android
+        env:
+          MANA_KEYSTORE: ${{ runner.temp }}/mana-release.p12
+          MANA_KEYSTORE_PASSWORD: ${{ secrets.MANA_KEYSTORE_PASSWORD }}
+        run: ./gradlew -Pmana.requireReleaseKey=true testDebugUnitTest assembleRelease bundleRelease
+
+      - name: Remove the keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/mana-release.p12"
+
+      # R8 strips res/raw resources it cannot see used. Without this one the watch never
+      # finds the phone (android/phone/src/main/res/raw/keep.xml).
+      - name: Phone still declares its Wear capability
+        run: $ANDROID_HOME/build-tools/36.1.0/aapt2 dump resources android/phone/build/outputs/apk/release/phone-release.apk | grep -q android_wear_capabilities
+
+      # Every artifact must carry the one certificate users already have installed.
+      - name: Check signing certificate
+        working-directory: android
+        run: |
+          want=$(cat release-cert.sha256)
+          apksigner="$ANDROID_HOME/build-tools/36.1.0/apksigner"
+          for apk in phone/build/outputs/apk/release/phone-release.apk \
+                     wear/build/outputs/apk/release/wear-release.apk \
+                     watchface/build/outputs/apk/release/watchface-release.apk; do
+            got=$("$apksigner" verify --print-certs "$apk" | sed -n 's/.*SHA-256 digest: //p' | head -1)
+            echo "$apk $got"
+            [ "$got" = "$want" ]
+          done
+
+      - name: Collect artifacts
+        run: |
+          v="${GITHUB_REF_NAME}"
+          mkdir -p out
+          cp android/phone/build/outputs/apk/release/phone-release.apk "out/mana-phone-$v.apk"
+          cp android/wear/build/outputs/apk/release/wear-release.apk "out/mana-watch-$v.apk"
+          cp android/watchface/build/outputs/apk/release/watchface-release.apk "out/mana-watchface-$v.apk"
+          (cd out && sha256sum *.apk > SHA256SUMS)
+
+      # The AABs are for the Play upload, not for users, so they stay a workflow artifact.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: play-bundles-${{ github.ref_name }}
+          path: android/*/build/outputs/bundle/release/*.aab
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" out/* --title "Mana $GITHUB_REF_NAME" --generate-notes --draft

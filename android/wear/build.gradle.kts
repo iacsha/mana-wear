@@ -16,8 +16,9 @@ android {
         applicationId = "io.github.manawear"
         minSdk = 30
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.2.0"
+        // Form factor 2: watch. Higher than the phone code, as Play expects for Wear builds.
+        versionCode = providers.gradleProperty("mana.versionCode").get().toInt() * 10 + 2
+        versionName = providers.gradleProperty("mana.versionName").get()
     }
 
     buildTypes {
@@ -25,8 +26,6 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            // Local iteration only. Release signing moves to CI in Phase 6.
-            signingConfig = signingConfigs.getByName("debug")
         }
     }
 

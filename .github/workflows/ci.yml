@@ -1,0 +1,33 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: oven-sh/setup-bun@v2
+      - name: Collector tests
+        run: bun install --frozen-lockfile && bun test
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: "platforms;android-37.2 build-tools;36.1.0"
+      - uses: gradle/actions/setup-gradle@v5
+
+      # Debug-signed: no secrets on pull requests.
+      - name: Android tests and build
+        working-directory: android
+        run: ./gradlew testDebugUnitTest assembleRelease

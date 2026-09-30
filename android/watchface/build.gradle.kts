@@ -17,16 +17,17 @@ android {
         // WFF version 2 runs on Wear OS 5 (API 34) and later.
         minSdk = 34
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.2.0"
+        versionCode = providers.gradleProperty("mana.versionCode").get().toInt() * 10
+        versionName = providers.gradleProperty("mana.versionName").get()
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            // R8 drops the unused R classes, so no dex ships: Play rejects a watch face
+            // bundle with minSdk 33+ that has one ("cannot have dex files").
+            isMinifyEnabled = true
             // The WFF runtime reads resources by name, which the shrinker cannot see.
             isShrinkResources = false
-            signingConfig = signingConfigs.getByName("debug")
         }
     }
 }

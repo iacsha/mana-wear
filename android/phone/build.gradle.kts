@@ -14,8 +14,9 @@ android {
         applicationId = "io.github.manawear"
         minSdk = 29
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.2.0"
+        // Form factor 1: phone.
+        versionCode = providers.gradleProperty("mana.versionCode").get().toInt() * 10 + 1
+        versionName = providers.gradleProperty("mana.versionName").get()
     }
 
     buildTypes {
@@ -23,9 +24,6 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
-            // Local iteration only. Release signing moves to CI in Phase 6. Both apps must
-            // be signed with the same key or the Data Layer will not connect them.
-            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
