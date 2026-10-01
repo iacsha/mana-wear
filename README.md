@@ -83,6 +83,10 @@ no camera permission.
 
 You can also type the URL and token by hand and tap **Save and test**.
 
+Use Claude Code on more than one machine? Run the collector on each and pair the phone
+with each one. The phone keeps up to four collectors. It asks all of them and shows the
+reading with the newest timestamp, which comes from the machine you used last.
+
 ### http or https
 
 The phone allows plain `http://` only to private addresses: `10/8`, `172.16/12`,
