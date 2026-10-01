@@ -161,7 +161,7 @@ class SettingsActivity : ComponentActivity() {
         store.save(next)
         collectors = next.collectors
         val dropped = before.collectors.map { it.url } - next.collectors.map { it.url }.toSet()
-        result = if (dropped.isEmpty()) "Saved." else "Mana keeps $MAX_COLLECTORS collectors, so ${urlHost(dropped.first()) ?: dropped.first()} was removed."
+        result = if (dropped.isEmpty()) "Saved." else "Mana keeps $MAX_COLLECTORS collectors, so ${collectorLabel(dropped.first())} was removed."
         return c
     }
 
@@ -176,7 +176,7 @@ class SettingsActivity : ComponentActivity() {
         val next = PhoneConfig(collectors).without(c.url)
         store.save(next)
         collectors = next.collectors
-        result = "Removed ${urlHost(c.url) ?: c.url}."
+        result = "Removed ${collectorLabel(c.url)}."
     }
 
     @Composable
@@ -230,7 +230,7 @@ class SettingsActivity : ComponentActivity() {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(urlHost(c.url) ?: c.url, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                    Text(collectorLabel(c.url), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
                     TextButton(onClick = { remove(c) }) { Text("Remove") }
                 }
             }
@@ -296,4 +296,14 @@ private fun describe(r: FetchResult): String = when (r) {
     FetchResult.Malformed -> "Collector sent something that is not a usage payload."
     FetchResult.NotConfigured -> "Enter a collector URL first."
     FetchResult.NoPhone, FetchResult.NoPhoneApp -> "Unexpected state."
+}
+
+/**
+ * How a collector is named on screen: host, plus the port when the URL has one, so two
+ * collectors on one machine can be told apart. Falls back to the URL itself.
+ */
+fun collectorLabel(url: String): String {
+    val uri = runCatching { java.net.URI(url) }.getOrNull()
+    val host = uri?.host ?: return url
+    return if (uri.port == -1) host else "$host:${uri.port}"
 }
