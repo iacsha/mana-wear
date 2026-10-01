@@ -1,4 +1,7 @@
 node_modules/
 *.tmp
-ops/git-push.log
 .claude/
+# Operator-only: the working ISA, homelab ops scripts and logs. A separate git repo.
+private/
+ISA.md
+ops
