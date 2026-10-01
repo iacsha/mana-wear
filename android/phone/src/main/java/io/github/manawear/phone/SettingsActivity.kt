@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -62,6 +63,7 @@ class SettingsActivity : ComponentActivity() {
     private var url by mutableStateOf("")
     private var token by mutableStateOf("")
     private var result by mutableStateOf("")
+    private var collectors by mutableStateOf<List<Collector>>(emptyList())
 
     // A pairing from a link, waiting for the user to confirm it.
     private var pendingLink by mutableStateOf<Pairing?>(null)
@@ -70,9 +72,12 @@ class SettingsActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         store = PhoneConfigStore(this)
         relay = Relay(this)
-        val saved = store.load()
-        url = saved.url.orEmpty()
-        token = saved.token.orEmpty()
+        collectors = store.load().collectors
+        // With a single collector the form shows it, so the one-machine case reads as before.
+        collectors.singleOrNull()?.let {
+            url = it.url
+            token = it.token.orEmpty()
+        }
         // After a rotation the link intent is still here; only ask again if it was unanswered.
         if (savedInstanceState == null || savedInstanceState.getBoolean(KEY_LINK_PENDING)) handleLink(intent)
 
@@ -136,21 +141,42 @@ class SettingsActivity : ComponentActivity() {
         saveAndTest()
     }
 
-    /** Saves the fields, or explains why not. True when saved. */
-    private fun save(): Boolean {
+    /**
+     * Adds the collector in the fields, or updates the one with the same URL. Returns it,
+     * or null with the reason in [result].
+     */
+    private fun save(): Collector? {
         val u = url.trim()
+        if (u.isEmpty()) {
+            result = "Enter a collector URL first."
+            return null
+        }
         urlProblem(u)?.let {
             result = it
-            return false
+            return null
         }
-        store.save(PhoneConfig(u.ifEmpty { null }, token.trim().ifEmpty { null }))
-        return true
+        val c = Collector(u, token.trim().ifEmpty { null })
+        val before = PhoneConfig(collectors)
+        val next = before.with(c)
+        store.save(next)
+        collectors = next.collectors
+        val dropped = before.collectors.map { it.url } - next.collectors.map { it.url }.toSet()
+        result = if (dropped.isEmpty()) "Saved." else "Mana keeps $MAX_COLLECTORS collectors, so ${urlHost(dropped.first()) ?: dropped.first()} was removed."
+        return c
     }
 
+    /** Tests the collector just saved on its own, so the answer is about that machine. */
     private fun saveAndTest() {
-        if (!save()) return
+        val c = save() ?: return
         result = "Testing…"
-        lifecycleScope.launch { result = describe(relay.answer()) }
+        lifecycleScope.launch { result = describe(relay.answer(PhoneConfig(listOf(c)))) }
+    }
+
+    private fun remove(c: Collector) {
+        val next = PhoneConfig(collectors).without(c.url)
+        store.save(next)
+        collectors = next.collectors
+        result = "Removed ${urlHost(c.url) ?: c.url}."
     }
 
     @Composable
@@ -188,10 +214,26 @@ class SettingsActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxWidth(),
             )
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedButton(onClick = { if (save()) result = "Saved." }) { Text("Save") }
+                OutlinedButton(onClick = { save() }) { Text("Save") }
                 OutlinedButton(onClick = ::saveAndTest) { Text("Save and test") }
             }
             if (result.isNotEmpty()) Text(result, style = MaterialTheme.typography.bodyLarge)
+            if (collectors.isNotEmpty()) {
+                Text(
+                    if (collectors.size > 1) "Collectors (the newest reading wins)" else "Collector",
+                    style = MaterialTheme.typography.titleSmall,
+                )
+            }
+            collectors.forEach { c ->
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(urlHost(c.url) ?: c.url, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                    TextButton(onClick = { remove(c) }) { Text("Remove") }
+                }
+            }
             val last = store.lastWatchRequestAt
             Text(
                 if (last == 0L) "The watch has not asked yet."
