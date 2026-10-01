@@ -1,4 +1,4 @@
-# Wear OS platform research (claude-clip)
+# Wear OS platform research (Mana)
 
 Researched 2026-09-29. Tags: [1P] first-party Google/Android source, [1P-src] AndroidX source or Google Maven, [2P] secondary or search-summary (not verified on a first-party page), UNKNOWN = not found.
 

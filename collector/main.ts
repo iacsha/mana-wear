@@ -51,9 +51,8 @@ export async function collect(opts: Options): Promise<Payload> {
   return build(reading, errors, opts.staleSeconds);
 }
 
-// MANA_* wins; CLIP_* is the pre-rename spelling and still read.
 function env(name: string): string | undefined {
-  return process.env[`MANA_${name}`] || process.env[`CLIP_${name}`] || undefined;
+  return process.env[`MANA_${name}`] || undefined;
 }
 
 function options(staleSeconds: number, cfg: Config, tapDir?: string): Options {

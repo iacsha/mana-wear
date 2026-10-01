@@ -1,4 +1,4 @@
-# Claude Code surface for claude-clip (first-party sources only)
+# Claude Code surface for Mana (first-party sources only)
 
 Researched 2026-09-29. Sources: code.claude.com docs (statusline, hooks, cli-reference, headless, costs, legal-and-compliance, agent-sdk/typescript) and anthropics/claude-code CHANGELOG.md (raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md). Nothing was executed against the `claude` binary.
 
@@ -65,4 +65,4 @@ Practical route: a hook can read nothing about plan usage; use statusLine, or St
 - Same page links the Consumer Terms of Service "for Free, Pro, and Max users" (https://www.anthropic.com/legal/consumer-terms). The Feb 2026 wording ("Using OAuth tokens obtained through Claude Free, Pro, or Max accounts in any other product, tool, or service ... is not permitted") is quoted by press (theregister.com, 2026-02-20), not verified on the current first-party page, which is softer.
 - Carve-out: "Nor does it prevent an end user from signing in to the unmodified Claude Code binary with their own Claude subscription".
 
-Implication for claude-clip: reading the token from `~/.claude/.credentials.json` and calling `/api/oauth/usage` from a separate app is a grey/likely-disallowed use of subscription credentials by a third-party tool. The statusLine `rate_limits` field (computed and handed over by the unmodified Claude Code binary) is the first-party-sanctioned data path.
+Implication for Mana: reading the token from `~/.claude/.credentials.json` and calling `/api/oauth/usage` from a separate app is a grey/likely-disallowed use of subscription credentials by a third-party tool. The statusLine `rate_limits` field (computed and handed over by the unmodified Claude Code binary) is the first-party-sanctioned data path.

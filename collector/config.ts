@@ -1,41 +1,28 @@
-// Where Mana keeps its state and its one config file, and the move from the old
-// claude-clip directories. Everything here is cheap because the tap calls it on every
-// status line render.
+// Where Mana keeps its state and its one config file. Everything here is cheap because
+// the tap calls it on every status line render.
 
-import { chmodSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
 const APP = "mana";
-const LEGACY = "claude-clip";
 
 function windows(): boolean {
   return process.platform === "win32";
 }
 
-// Pre-rename installs used claude-clip directories. Move one over the first time the
-// new name is asked for, so a token and a tap reading survive the upgrade.
-function migrated(base: string): string {
-  const dir = join(base, APP);
-  const old = join(base, LEGACY);
-  if (!existsSync(dir) && existsSync(old)) {
-    try {
-      renameSync(old, dir);
-    } catch {
-      return old;
-    }
-  }
-  return dir;
+function appDir(base: string): string {
+  return join(base, APP);
 }
 
 export function stateDir(): string {
-  if (windows()) return migrated(join(process.env.LOCALAPPDATA || join(homedir(), "AppData", "Local")));
-  return migrated(process.env.XDG_STATE_HOME || join(homedir(), ".local", "state"));
+  if (windows()) return appDir(join(process.env.LOCALAPPDATA || join(homedir(), "AppData", "Local")));
+  return appDir(process.env.XDG_STATE_HOME || join(homedir(), ".local", "state"));
 }
 
 export function configDir(): string {
-  if (windows()) return migrated(process.env.APPDATA || join(homedir(), "AppData", "Roaming"));
-  return migrated(process.env.XDG_CONFIG_HOME || join(homedir(), ".config"));
+  if (windows()) return appDir(process.env.APPDATA || join(homedir(), "AppData", "Roaming"));
+  return appDir(process.env.XDG_CONFIG_HOME || join(homedir(), ".config"));
 }
 
 export interface StatusLineBackup {
